@@ -1,21 +1,7 @@
 <?php
-session_start();
+require __DIR__ . '/../include/bootstrap.php';
 
-
-// Database connection
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "cinemoto_db";
-
-// Establish connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-// Fetch movies from the database
+$conn = cinemoto_require_db();
 $sql = "SELECT * FROM movies";
 $result = $conn->query($sql);
 
@@ -53,7 +39,7 @@ $result = $conn->query($sql);
 
             <div class="sign">
                 <span class="header-name"><?php echo isset($_SESSION['name']) ? htmlspecialchars($_SESSION['name']) : ''; ?></span>
-                <button id="signOutBtn" class="button-56" role="button">Sign Out</button>
+                <button id="signOutBtn" class="button-56" role="button" data-csrf="<?php echo cinemoto_h(cinemoto_csrf_token()); ?>">Sign Out</button>
             </div>
         </div>
     </header>
@@ -65,7 +51,16 @@ $result = $conn->query($sql);
 
             // Event listener for Sign Out button
             signOutBtn.addEventListener('click', function() {
-                window.location.href = 'logout.php';
+                var form = document.createElement('form');
+                form.method = 'POST';
+                form.action = 'logout.php';
+                var token = document.createElement('input');
+                token.type = 'hidden';
+                token.name = 'csrf';
+                token.value = signOutBtn.getAttribute('data-csrf') || '';
+                form.appendChild(token);
+                document.body.appendChild(form);
+                form.submit();
             });
         });
     </script>

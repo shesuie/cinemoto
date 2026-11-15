@@ -1,5 +1,5 @@
 <?php
-session_start();
+require __DIR__ . '/../include/bootstrap.php';
 
 
 
@@ -46,7 +46,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['user_email'])) {
 
                 <div class="sign">
                     <span class="header-name"><?php echo isset($_SESSION['name']) ? htmlspecialchars($_SESSION['name']) : ''; ?></span>
-                    <button id="signOutBtn" class="button-56" role="button">Sign Out</button>
+                    <button id="signOutBtn" class="button-56" role="button" data-csrf="<?php echo cinemoto_h(cinemoto_csrf_token()); ?>">Sign Out</button>
                 </div>
             </div>
         </header>
@@ -57,8 +57,16 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['user_email'])) {
 
                 // Event listener for Sign Out button
                 signOutBtn.addEventListener('click', function() {
-                    // Redirect to sign out action (logout)
-                    window.location.href = 'logout.php';
+                    var form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = 'logout.php';
+                    var token = document.createElement('input');
+                    token.type = 'hidden';
+                    token.name = 'csrf';
+                    token.value = signOutBtn.getAttribute('data-csrf') || '';
+                    form.appendChild(token);
+                    document.body.appendChild(form);
+                    form.submit();
                 });
             });
         </script>
@@ -641,9 +649,10 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['user_email'])) {
                         <div class="form login">
                             <span class="title">Login</span>
                             <?php if (isset($_GET['error'])) { ?>
-                                <p class="error"><?php echo $_GET['error']; ?></p>
+                                <p class="error"><?php echo cinemoto_flash('error'); ?></p>
                             <?php } ?>
                             <form action="login-conn.php" method="post">
+                                <?php echo cinemoto_form_guards(); ?>
                                 <div class="input-field">
                                     <input type="email" name="email" placeholder="Enter your email" required>
                                     <i class="uil uil-envelope icon"></i>
@@ -674,12 +683,13 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['user_email'])) {
                         <div class="form signup">
                             <span class="title">Sign up</span>
                             <?php if (isset($_GET['reg_error'])) { ?>
-                                <p class="error"><?php echo $_GET['reg_error']; ?></p>
+                                <p class="error"><?php echo cinemoto_flash('reg_error'); ?></p>
                             <?php } ?>
                             <?php if (isset($_GET['reg_success'])) { ?>
-                                <p class="success"><?php echo $_GET['reg_success']; ?></p>
+                                <p class="success"><?php echo cinemoto_flash('reg_success'); ?></p>
                             <?php } ?>
                             <form action="registration-conn.php" method="post">
+                                <?php echo cinemoto_form_guards(); ?>
                                 <div class="input-field">
                                     <input type="text" name="name" placeholder="Enter your name" required>
                                     <i class="uil uil-user icon"></i>

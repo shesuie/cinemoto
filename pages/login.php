@@ -1,3 +1,6 @@
+<?php
+require __DIR__ . '/../include/bootstrap.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -19,9 +22,10 @@
             <div class="form login">
                 <span class="title">Login</span>
                 <?php if (isset($_GET['error'])) { ?>
-                    <p class="error"><?php echo $_GET['error']; ?></p>
+                    <p class="error"><?php echo cinemoto_flash('error'); ?></p>
                 <?php } ?>
                 <form action="login-conn.php" method="post">
+                    <?php echo cinemoto_form_guards(); ?>
                     <div class="input-field">
                         <input type="email" name="email" placeholder="Enter your email" required>
                         <i class="uil uil-envelope icon"></i>
@@ -52,12 +56,13 @@
             <div class="form signup">
                 <span class="title">Registration</span>
                 <?php if (isset($_GET['reg_error'])) { ?>
-                    <p class="error"><?php echo $_GET['reg_error']; ?></p>
+                    <p class="error"><?php echo cinemoto_flash('reg_error'); ?></p>
                 <?php } ?>
                 <?php if (isset($_GET['reg_success'])) { ?>
-                    <p class="success"><?php echo $_GET['reg_success']; ?></p>
+                    <p class="success"><?php echo cinemoto_flash('reg_success'); ?></p>
                 <?php } ?>
                 <form action="register.php" method="post">
+                    <?php echo cinemoto_form_guards(); ?>
                     <div class="input-field">
                         <input type="text" name="name" placeholder="Enter your Name*" required>
                         <i class="uil uil-user"></i>
@@ -86,7 +91,7 @@
                         <i class="uil uil-lock icon"></i>
                     </div>
                     <div class="input-field">
-                        <input type="password" class="password" placeholder="Confirm Password*" required>
+                        <input type="password" name="confirm_password" class="password" placeholder="Confirm Password*" required>
                         <i class="uil uil-lock icon"></i>
                         <i class="uil uil-eye-slash showHidePw"></i>
                     </div>

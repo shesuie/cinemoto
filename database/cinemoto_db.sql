@@ -93,5 +93,25 @@ CREATE TABLE IF NOT EXISTS tickets (
     FOREIGN KEY (branch_id) REFERENCES branches(branch_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- Login and signup throttling. Stores the IP and time only.
+CREATE TABLE IF NOT EXISTS auth_attempts (
+    attempt_id INT AUTO_INCREMENT PRIMARY KEY,
+    action_name VARCHAR(20) NOT NULL,
+    ip_address VARCHAR(45) NOT NULL,
+    attempted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_auth_attempts_lookup (action_name, ip_address, attempted_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Security audit events. No passwords, emails, or request bodies.
+CREATE TABLE IF NOT EXISTS security_events (
+    event_id INT AUTO_INCREMENT PRIMARY KEY,
+    event_type VARCHAR(40) NOT NULL,
+    ip_address VARCHAR(45) NOT NULL,
+    customer_id INT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_security_events_type (event_type, created_at),
+    INDEX idx_security_events_ip (ip_address, created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 -- Commit the transaction
 COMMIT;
